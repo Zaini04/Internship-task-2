@@ -68,7 +68,7 @@ const decreaseQty = () => {
       <div className="flex flex-col md:flex-row w-full justify-between items-start">
         {/* Image Section */}
         <div className="w-full md:w-[50%] mt-9 flex flex-col justify-center items-center">
-          <div className="w-11/12  md:h-[80vh]  px-1 py-5 border-2 border-[#F2F2F2] flex justify-center items-center">
+          <div className="w-11/12  md:h-[85vh]  px-1 py-5 border-2 border-[#F2F2F2] flex justify-center items-center">
             <img
               className="w-11/12 md:w-full xl:w-11/12 md:h-full m-4 object-cover  "
               src={product.img}

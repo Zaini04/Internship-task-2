@@ -11,7 +11,7 @@ import Testominals from '../Components/Testominals'
 
 function Home() {
   return (
-    <div className='flex flex-col justify-center items-center'>
+    <div className='flex flex-col justify-center items-center overflow-x-hidden'>
          <div className="flex flex-col ">
         <Carousol />
         <h1 className="font-bold flex gap-x-7 justify-center items-center text-[1rem] sm:text-xl text-[#222222] mt-16 w-full md:text-2xl ">

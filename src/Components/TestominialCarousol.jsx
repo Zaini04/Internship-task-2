@@ -1,108 +1,147 @@
- import React, { useState, useEffect } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import userImage from "../assets/Images/user.png";
 
-function TestominialCarousol() {
-  const [startIndex, setStartIndex] = useState(0);
+const originalSlides = [
+  {
+    id: 1,
+    img: userImage,
+    name: "Ahmad Sultan",
+    desc: "Speedy delivery, trustworthy store, top-notch gadgets! Excellent service, affordable rates...",
+  },
+  {
+    id: 2,
+    img: userImage,
+    name: "Zain Iqbal",
+    desc: "I recently purchased iPhone cover and I couldn't be happier...",
+  },
+  {
+    id: 3,
+    img: userImage,
+    name: "Abdullah Yousaf",
+    desc: "Rapid delivery, great electronics and good prices...",
+  },
+  {
+    id: 4,
+    img: userImage,
+    name: "Fatima Umar",
+    desc: "I've been a loyal customer of Garey Store for years...",
+  },
+];
 
-  const products = [
-    {
-      id: 1,
-      img: userImage,
-      name: "Ahmad Sultan",
-      desc: "Speedy delivery, trustworthy store, top-notch gadgets! Excellent service, affordable rates...",
-      rating: 4.5,
-    },
-    {
-      id: 2,
-      img: userImage,
-      name: "Zain Iqbal",
-      desc: "I recently purchased iPhone cover and I couldn't be happier...",
-      rating: 4.0,
-    },
-    {
-      id: 3,
-      img: userImage,
-      name: "Abdullah Yousaf",
-      desc: "Rapid delivery, great electronics and good prices...",
-      rating: 4.2,
-    },
-    {
-      id: 4,
-      img: userImage,
-      name: "Fatima Umar",
-      desc: "I've been a loyal customer of Garey Store for years...",
-      rating: 5.0,
-    },
+const VISIBLE = 3;
+
+export default function TestominialCarousol() {
+  const [currentIndex, setCurrentIndex] = useState(VISIBLE);
+  const trackRef = useRef(null);
+  const transitionDuration = 500;
+
+  const slides = [
+    ...originalSlides.slice(-VISIBLE),
+    ...originalSlides,
+    ...originalSlides.slice(0, VISIBLE),
   ];
 
-  const total = products.length;
-
-  // Looping carousel items
-  const visibleItems = [
-    products[startIndex % total],
-    products[(startIndex + 1) % total],
-    products[(startIndex + 2) % total],
-  ];
-
-  // Auto Loop every 4 seconds
+  // Immediately set initial transform on mount
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStartIndex((prev) => (prev + 1) % total);
-    }, 2000);
+    const track = trackRef.current;
+    if (track) {
+      track.style.transition = "none";
+      track.style.transform = `translateX(-${(100 / slides.length) * currentIndex}%)`;
+    }
+  }, []);
 
-    return () => clearInterval(interval); // clear interval on unmount
-  }, [total]);
+  // Slide movement
+  const slideTo = (index, withTransition = true) => {
+    const track = trackRef.current;
+    if (!track) return;
 
-  const handleNext = () => {
-    setStartIndex((prevIndex) => (prevIndex + 1) % total);
+    if (withTransition) {
+      track.style.transition = `transform ${transitionDuration}ms ease-in-out`;
+    } else {
+      track.style.transition = "none";
+    }
+
+    track.style.transform = `translateX(-${(100 / slides.length) * index}%)`;
   };
 
+  // Auto scroll
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentIndex((prev) => prev + 1);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  // Handle smooth reset on clone boundary
+  useEffect(() => {
+    slideTo(currentIndex);
+
+    const timeout = setTimeout(() => {
+      if (currentIndex >= slides.length - VISIBLE) {
+        setCurrentIndex(VISIBLE);
+        slideTo(VISIBLE, false);
+      }
+    }, transitionDuration);
+
+    return () => clearTimeout(timeout);
+  }, [currentIndex]);
+
+  const handleNext = () => setCurrentIndex((prev) => prev + 1);
   const handlePrev = () => {
-    setStartIndex((prevIndex) => (prevIndex - 1 + total) % total);
+    if (currentIndex === 0) {
+      // Jump to duplicate at the end before real slides
+      const jumpTo = slides.length - VISIBLE * 2;
+      setCurrentIndex(jumpTo);
+      slideTo(jumpTo, false);
+      setTimeout(() => setCurrentIndex(jumpTo - 1), 0);
+    } else {
+      setCurrentIndex((prev) => prev - 1);
+    }
   };
 
   return (
-    <div className="w-full flex flex-col text-[#878787] justify-center items-center relative mx-auto p-4">
+    <div className="w-10/12 relative mx-auto overflow-hidden py-4">
       {/* Navigation Buttons */}
-      <div className="flex w-full absolute top-1/2 justify-between items-center px-2 z-10">
-        <button
-          onClick={handlePrev}
-          className="px-4 py-2 rounded hover:text-black transition-all duration-300"
-        >
+      <div className="absolute top-1/2 -translate-y-1/2 w-full flex justify-between px-4 z-10">
+        <button onClick={handlePrev} className="hover:text-black">
           <FaArrowLeft />
         </button>
-        <button
-          onClick={handleNext}
-          className="px-4 py-2 rounded hover:text-black transition-all duration-300"
-        >
+        <button onClick={handleNext} className="hover:text-black">
           <FaArrowRight />
         </button>
       </div>
 
-      {/* Carousel Items with Transition */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 w-full transition-transform duration-700 ease-in-out">
-        {visibleItems.map((item) => (
-          <div
-            key={item.id}
-            className="p-4 h-full flex flex-col gap-y-3 text-center justify-center items-center rounded-lg bg-white "
-          >
-            <div className="w-24 h-24">
-              <img
-                src={item.img}
-                alt={item.name}
-                className="w-full h-full object-cover rounded-full mb-2"
-              />
-            </div>
-            <h3 className="font-semibold text-lg">{item.name}</h3>
-            <p className="text-sm text-gray-600 max-h-32 overflow-hidden">
-              {item.desc}
-            </p>
-            <p className="text-yellow-500 mt-1 text-xl">⭐⭐⭐⭐⭐</p>
-          </div>
-        ))}
+      {/* Carousel Track */}
+      <div className="overflow-hidden w-full">
+        <div
+          ref={trackRef}
+          className="flex"
+          style={{
+            width: `${(100 / VISIBLE) * slides.length}%`,
+          }}
+        >
+          {slides.map((item, index) => (
+  <div
+    key={index}
+    className="p-2 flex-shrink-0 bg-white text-center mx-auto rounded-lg "
+    style={{ width: `${100 / slides.length}%`, maxWidth: '300px' }} // Adjust max width
+  >
+    <div className="w-20 h-20 mx-auto mb-2">
+      <img
+        src={item.img}
+        alt={item.name}
+        className="w-full h-full object-cover rounded-full"
+      />
+    </div>
+    <h3 className="font-semibold text-base">{item.name}</h3>
+    <p className="text-sm text-gray-600 line-clamp-3">{item.desc}</p>
+    <p className="text-yellow-500 mt-1 text-lg">⭐⭐⭐⭐⭐</p>
+  </div>
+))}
+
+        </div>
       </div>
     </div>
   );
 }
-export default TestominialCarousol;

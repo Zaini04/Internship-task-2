@@ -354,7 +354,7 @@ function Navbar() {
             </Link>
             <FaSearch onClick={() => setQuerySearch((prev) => !prev)}  className="md:hidden  transition-all delay-100 duration-300" />
               <div
-                className={`fixed bottom-[21rem] left-0 w-full h-[50vh] bg-white z-50 overflow-hidden
+                className={`fixed bottom-[21rem] md:hidden left-0 w-full h-[50vh] bg-white z-50 overflow-hidden
                   flex justify-start items-center flex-col
                   transition-all duration-700 ease-in-out transform
                   ${

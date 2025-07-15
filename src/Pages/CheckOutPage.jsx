@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import HomeNav from "../Components/HomeNav";
 import { useCart } from "../context/Context";
 import { useNavigate } from "react-router-dom";
@@ -9,33 +9,34 @@ import Radio from "@mui/joy/Radio";
 function CheckOutPage() {
   const [selectedValue, setSelectedValue] = useState("a");
 
-  const { products } = useCart();
+  const { products, setProducts } = useCart();
   const subTotal = products.reduce((total, item) => {
     return total + item.quantity * parseFloat(item.price);
   }, 0);
+      const orderProducts = [...products]; // ✅ Save copy before clearing cart
+
 
   const navigate = useNavigate();
   const ViewOrders = () => {
-    navigate("/orderhistory");
-
-const OrderId = `${Math.floor(Math.random() * 100000)}`;
-    const date =  new Date().toLocaleDateString("en-GB")
+  const orderId = `ORD-${Date.now()}`;
+const date = new Date().toLocaleDateString();
     const newOrder = {
-        id: OrderId,
-        date: date,
-        products: [...products],
-        deleveriyFee: fees,
-        totalAmount:total,
-        status: "pending"
+      id: orderId,
+      date: date,
+      products: orderProducts, // ✅ use this copy
+      deleveriyFee: fees,
+      totalAmount: total,
+      status: "pending",
+    };
 
-    }
+    const existingOrders = JSON.parse(localStorage.getItem("orders")) || [];
+    const updatedOrders = [...existingOrders, newOrder];
+    localStorage.setItem("orders", JSON.stringify(updatedOrders));
+    setProducts([]); // ✅ Empty the cart
 
-    const existsOrders = JSON.parse(localStorage.getItem("orders")) || []
-    const updatedOrders = [...existsOrders,newOrder]
+    toast.success("Placed Order");
 
-    localStorage.setItem('orders' , JSON.stringify(updatedOrders))
-
-    toast.success("Placed Order")
+    navigate("/orderhistory");
   };
   const [cod, setCOD] = useState(true);
   const [payonline, setPayOnline] = useState(false);
@@ -56,12 +57,16 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
     setCOD(false);
   };
 
-  useEffect(() => {
-    if (products.length <= 0) {
-      navigate("/");
-      toast.error("you don't have any product");
-    }
-  }, [products]);
+//   useEffect(() => {
+//   localStorage.removeItem("orders");
+// }, []);
+
+  // useEffect(() => {
+  //   if (orderProducts.length <= 0) {
+  //     navigate("/");
+  //     toast.error("you don't have any product");
+  //   }
+  // }, [orderProducts]);
 
   useEffect(() => {
     if (cod) {
@@ -84,6 +89,7 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
   const fees = subTotal > 100 ? "00" : "20";
   const discount = subTotal > 350 ? "100" : "00";
   const total = Number(subTotal) + Number(fees) - Number(discount);
+  const formRef = useRef();
 
   return (
     <div className="flex flex-col justify-center items-center overflow-x-hidden">
@@ -93,13 +99,18 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
           {/* left div */}
           <div className="flex flex-col w-full md:w-[55%] gap-x-2">
             <h1 className="font-bold text-2xl">Delivery Details</h1>
-            <form onSubmit={ViewOrders} className="w-full mt-6 border-t border-[#CCCCCC] py-7">
+            <form
+              onSubmit={ViewOrders}
+              ref={formRef}
+              className="w-full mt-6 border-t border-[#CCCCCC] py-7"
+            >
               <div className="flex gap-x-4 w-full justify-between">
                 <div className="flex flex-col gap-y-3 w-6/12">
                   <label className="text-[#333333] font-semibold">
                     First Name
                   </label>
-                  <input required
+                  <input
+                    required
                     type="text"
                     placeholder="First Name"
                     className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
@@ -109,7 +120,8 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
                   <label className="text-[#333333] font-semibold">
                     Last Name
                   </label>
-                  <input required
+                  <input
+                    required
                     type="text"
                     placeholder="Last Name"
                     className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
@@ -123,14 +135,16 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
 
                 <div className="flex gap-x-4 w-full justify-between mt-4">
                   <div className="flex flex-col gap-y-3 w-6/12">
-                    <input required
+                    <input
+                      required
                       type="number"
                       placeholder="Zone Number"
                       className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
                     />
                   </div>
                   <div className="flex flex-col gap-y-3 w-6/12">
-                    <input required
+                    <input
+                      required
                       type="number"
                       placeholder="Street Number"
                       className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
@@ -139,14 +153,16 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
                 </div>
                 <div className="flex gap-x-4 w-full justify-between mt-4">
                   <div className="flex flex-col gap-y-3 w-6/12">
-                    <input required
+                    <input
+                      required
                       type="text"
                       placeholder="Building Number"
                       className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
                     />
                   </div>
                   <div className="flex flex-col gap-y-3 w-6/12">
-                    <input required
+                    <input
+                      required
                       type="text"
                       placeholder="Unit Number"
                       className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
@@ -154,7 +170,7 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
                   </div>
                 </div>
                 <div className="flex flex-col gap-y-3 w-full mt-3">
-                  <input 
+                  <input
                     type="text"
                     placeholder="Optional (any special notes for delivery)"
                     className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
@@ -162,7 +178,8 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
                 </div>
                 <div className="flex flex-col gap-y-3 w-full mt-3">
                   <label className="text-[#333333] font-semibold">Phone*</label>
-                  <input required
+                  <input
+                    required
                     type="text"
                     placeholder="Phone Number"
                     className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
@@ -170,7 +187,8 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
                 </div>
                 <div className="flex flex-col gap-y-3 w-full mt-3">
                   <label className="text-[#333333] font-semibold">Email*</label>
-                  <input required
+                  <input
+                    required
                     type="text"
                     placeholder="Email"
                     className="border border-[#CCCCCC] outline-none px-3 text-[#878787] py-2 w-full"
@@ -302,11 +320,18 @@ const OrderId = `${Math.floor(Math.random() * 100000)}`;
                 Myfatoorah payment gateway. Privacy Policy.
               </p>
               <div className="w-11/12 flex gap-x-2 mt-4">
-                <input type="checkbox" />
+                <input type="checkbox" required />
                 <p> I agree to the Terms & Conditions & Privacy Policy *</p>
               </div>
               <button
-                onClick={ViewOrders}
+                onClick={() => {
+                  if (formRef.current.checkValidity()) {
+                    ViewOrders();
+                  } else {
+                    toast.error("Please fill all required fields");
+                    formRef.current.reportValidity(); // shows browser error tooltips
+                  }
+                }}
                 className="w-7/12 md:w-6/12 lg:w-4/12 text-[1.1rem]  font-bold text-white   cursor-pointer hover:opacity-85 transition-opacity duration-500 delay-100 ease-in-out bg-[#861F3D] rounded-4xl py-3 mt-7 pb-4 mb-4 "
               >
                 Place Order

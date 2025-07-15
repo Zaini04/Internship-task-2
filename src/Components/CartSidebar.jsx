@@ -25,14 +25,14 @@ const viewCart =()=>{
  const CheckOut =()=>{
   if(products.length > 0){
 
-    navigate('/checkoutpage')
+    navigate('/checkout')
   }
   else{
     toast.error("You don't have any product in Cart ")
   }
   setCart(false)
 }
-const subTotal = products.reduce((total,item)=>{
+const subTotal =  products.reduce((total,item)=>{
   return total + item.quantity * parseFloat(item.price) 
 },0)
 
@@ -113,7 +113,7 @@ const subTotal = products.reduce((total,item)=>{
 
       <div className="flex w-full justify-between  items-center py-4  mt-2 ">
         <h2 className="text-lg font-bold ml-4">SubTotal</h2>
-        <p className="cursor-pointer text-lg mr-4">QAR {subTotal.toFixed(2)}</p>
+        <p className="cursor-pointer text-lg mr-4">QAR { subTotal.toFixed(2)}</p>
       </div>
       <div className="flex flex-col px-4">
         <p className="text-sm text-[#878787]">

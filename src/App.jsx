@@ -21,6 +21,7 @@ import OrderHistory from './Pages/OrderHistory'
 import CheckOutPage from './Pages/CheckOutPage'
 import BottomNav from './Components/BottomNav'
 import CartSidebar from './Components/CartSidebar'
+import ScrollToTop from './Components/ScrollToTop'
 
 
 
@@ -28,6 +29,7 @@ function App() {
 
   return (
     <div>
+      <ScrollToTop/>
       <Navbar/>
       
       <Routes>
@@ -44,7 +46,7 @@ function App() {
         <Route path='/viewcart' element={<ViewCart />} ></Route> 
         <Route path='/orderhistory' element={<OrderHistory />} ></Route> 
         <Route path='/cartsidebar' element={<CartSidebar />} ></Route> 
-        <Route path='/checkoutpage' element={<CheckOutPage />} ></Route> 
+        <Route path='/checkout' element={<CheckOutPage />} ></Route> 
 
 
       </Routes>

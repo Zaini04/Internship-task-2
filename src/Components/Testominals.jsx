@@ -13,11 +13,11 @@ function Testominals() {
         </h1>
         <p className='text-[#878787]'>What our clients says</p>
         </div>
-        <div>
+        <div className='flex justify-center items-center w-full overflow-x-hidden'>
             <TestominialCarousol/>
         </div>
-        <div className='flex flex-col md:flex-row items-start md:items-center gap-y-3 justify-start md:justify-between w-full mt-4 py-8'>
-            <div className='flex justify-center items-center w-full md:w-4/12 gap-x-6'>
+        <div className='hidden xl:flex flex-col md:flex-row items-start md:items-center gap-y-3 justify-start md:justify-between w-full  lg:w-10/12 mt-4 py-8'>
+            <div className='flex  justify-center items-center w-full md:w-4/12 gap-x-6'>
                 <div className='w-[12%]'>
                     <img  src={supportImage} alt="" />
                 </div>

@@ -37,8 +37,7 @@ function OrderHistory() {
                 {
                     orders.map((order,index)=>(
                         <tr key={index} className="w-11/12 text-xs  ">
-                            {console.log(order)
-                            }
+                           
                             <td className="border   border-[#CCCCCC] text-center  justify-center items-center p-2 ">{order.date}</td>
                             <td className="border border-[#CCCCCC] text-center justify-center items-center p-2 ">{order.id}</td>
                             {order.products.map((p,i)=>(
